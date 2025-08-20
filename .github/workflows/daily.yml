@@ -2,30 +2,42 @@ name: Daily Screenshot
 
 on:
   schedule:
-    - cron: "0 21 * * 1-5"  # 16:00 PDC Mon-Fri
-    - cron: "0 17 * * 6"    # 12:00 PDC Sat
-    - cron: "0 14 * * 0"    # 09:00 PDC Sun
-  workflow_dispatch:        # allow manual run
+    - cron: "0 21 * * 1-5"   # Mon-Fri at 16:00 Cancun (21:00 UTC)
+    - cron: "0 17 * * 6"     # Saturday at 12:00 Cancun (17:00 UTC)
+    - cron: "0 14 * * 0"     # Sunday at 09:00 Cancun (14:00 UTC)
+  workflow_dispatch:
 
 jobs:
   screenshot:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+
+      - name: Cache Puppeteer Chromium
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/puppeteer
+          key: ${{ runner.os }}-puppeteer
+          restore-keys: |
+            ${{ runner.os }}-puppeteer
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Run script
+        run: npm ci
         env:
+          PUPPETEER_CACHE_DIR: ~/.cache/puppeteer
+
+      - name: Run screenshot script
+        run: node index.js
+        env:
+          PUPPETEER_CACHE_DIR: ~/.cache/puppeteer
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
-        run: node index.js
