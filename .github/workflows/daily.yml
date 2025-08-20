@@ -22,11 +22,15 @@ jobs:
         with:
           node-version: 20
 
-      # 3️⃣ Install dependencies (Puppeteer downloads Chromium here)
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # 4️⃣ Cache Puppeteer Chromium for future runs
+      # 4️⃣ Explicitly install Puppeteer Chromium
+      - name: Install Puppeteer Chromium
+        run: npx puppeteer install
+
+      # 5️⃣ Cache Puppeteer Chromium for future runs
       - name: Cache Puppeteer Chromium
         uses: actions/cache@v3
         with:
@@ -35,7 +39,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-puppeteer-
 
-      # 5️⃣ Run screenshot script
+      # 6️⃣ Run screenshot script
       - name: Run screenshot script
         run: node index.js
         env:
