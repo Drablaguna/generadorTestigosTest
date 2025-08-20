@@ -45,8 +45,8 @@ async function createBrowserAndCaptureScreenshot(website) {
   } catch (err) {
     throw new Error(
       err instanceof puppeteer.errors.TimeoutError
-        ? `Timeout exceeded while capturing screenshot`
-        : `Screenshot capture failed: ${err.message}`
+        ? `⚠️ Timeout exceeded while capturing screenshot`
+        : `❌ Screenshot capture failed: ${err.message}`
     );
   } finally {
     await browser.close();
@@ -77,7 +77,7 @@ async function captureScreenshotWithRetries(
       if (attempt >= maxRetries) {
         const totalTime = Date.now() - startTime;
         throw new Error(
-          `Failed after ${maxRetries} attempts (${totalTime} ms total)`
+          `❌ Failed after ${maxRetries} attempts (${totalTime} ms total)`
         );
       }
 
@@ -92,10 +92,10 @@ async function captureScreenshotWithRetries(
 // ---------------------------------- DRIVE ----------------------------------
 async function authorize() {
   if (!CLIENT_ID || !CLIENT_SECRET) {
-    throw new Error("Missing CLIENT_ID or CLIENT_SECRET");
+    throw new Error("❌ Missing credentials");
   }
   if (!REFRESH_TOKEN) {
-    throw new Error("Missing refresh_token");
+    throw new Error("❌ Missing token");
   }
 
   const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET);
@@ -103,11 +103,11 @@ async function authorize() {
 
   try {
     await oAuth2Client.getAccessToken();
-    console.log("Google Drive auth successful");
+    console.log("✅ Google Drive auth successful");
   } catch (err) {
-    console.error("Google Drive auth failed:", err.message);
+    console.error("❌ Google Drive auth failed:", err.message);
     throw new Error(
-      "Auth validation failed — check your credentials and refresh token."
+      "❌ Auth validation failed — check your credentials and refresh token."
     );
   }
 
@@ -120,7 +120,7 @@ async function assertFileInDriveFolderExists(filename, filesInDriveArray) {
 
 async function getDriveFolderFiles(authClient, folderId) {
   if (!authClient) {
-    throw new Error("No auth client passed to getDriveFolderFiles");
+    throw new Error("❌ No auth client passed");
   }
   const drive = google.drive({ version: "v3", auth: authClient });
   try {
@@ -130,14 +130,14 @@ async function getDriveFolderFiles(authClient, folderId) {
     });
 
     if (!res.data.files) {
-      console.warn("No files found or API returned empty list.");
+      console.warn("⚠️ No files found or API returned empty list.");
       return [];
     }
 
     return res.data.files;
   } catch (err) {
-    console.error("Error listing files:", err);
-    throw new Error(`Error: ${err}`);
+    console.error("❌ Error listing files:", err);
+    throw new Error(`❌ Error: ${err}`);
   }
 }
 
@@ -191,7 +191,7 @@ async function storeFileInDrive(
 
   if (!currentDayScreenshotExists) {
     console.log(
-      `No se encuentra testigo para ${currentYMDDate}, generando captura...`
+      `No screenshot found for ${currentYMDDate}, generating...`
     );
     const screenshot = await captureScreenshotWithRetries();
     const fileUploadStatus = await storeFileInDrive(
@@ -204,7 +204,7 @@ async function storeFileInDrive(
     currentDayScreenshotExists = fileUploadStatus.isUploaded;
   } else {
     console.log(
-      `Testigo para ${currentYMDDate} ya se encuentra en Google Drive.`
+      `✅ Screenshot for ${currentYMDDate} already in Google Drive.`
     );
   }
 })();
