@@ -1,0 +1,24 @@
+{
+  "name": "generadortestigostest",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Drablaguna/generadorTestigosTest#readme",
+  "bugs": {
+    "url": "https://github.com/Drablaguna/generadorTestigosTest/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Drablaguna/generadorTestigosTest.git"
+  },
+  "license": "MIT",
+  "author": "David Laguna Parra",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "googleapis": "^156.0.0",
+    "puppeteer": "^24.17.0"
+  }
+}

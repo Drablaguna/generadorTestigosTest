@@ -1,0 +1,31 @@
+name: Daily Screenshot
+
+on:
+  schedule:
+    - cron: "0 21 * * 1-5"  # 16:00 PDC Mon-Fri
+    - cron: "0 17 * * 6"    # 12:00 PDC Sat
+    - cron: "0 14 * * 0"    # 09:00 PDC Sun
+  workflow_dispatch:        # allow manual run
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run script
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+        run: node index.js
