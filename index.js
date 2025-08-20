@@ -20,7 +20,9 @@ function delay(ms) {
 
 // -------------------------------- PUPPETEER  --------------------------------
 async function createBrowserAndCaptureScreenshot(website) {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 1400 });
   await page.setDefaultNavigationTimeout(60000);
