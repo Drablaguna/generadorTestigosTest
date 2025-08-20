@@ -30,20 +30,10 @@ jobs:
       - name: Install Puppeteer Chromium
         run: npx puppeteer install
 
-      # 5️⃣ Cache Puppeteer Chromium for future runs
-      - name: Cache Puppeteer Chromium
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/puppeteer
-          key: ${{ runner.os }}-puppeteer-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-puppeteer-
-
-      # 6️⃣ Run screenshot script
+      # 5️⃣ Run screenshot script
       - name: Run screenshot script
         run: node index.js
         env:
-          PUPPETEER_CACHE_DIR: ~/.cache/puppeteer
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
