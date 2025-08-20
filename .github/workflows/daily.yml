@@ -35,6 +35,7 @@ jobs:
         run: node index.js
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}

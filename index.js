@@ -3,10 +3,10 @@ const puppeteer = require("puppeteer");
 const { google } = require("googleapis");
 
 const CLIENT_ID = process.env.CLIENT_ID;
+const WEBSITE_URL = process.env.WEBSITE_URL;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID;
-// TODO Schedule to run 18:00 M-F, 12:00 SAT, 9:00 SUN
 
 // ---------------------------------- UTILS ----------------------------------
 async function generateYMDDate() {
@@ -65,9 +65,7 @@ async function captureScreenshotWithRetries(
     attempt++;
     try {
       console.log(`Attempt ${attempt} to capture screenshot...`);
-      const stream = await createBrowserAndCaptureScreenshot(
-        "https://www.mcvnoticias.com/"
-      );
+      const stream = await createBrowserAndCaptureScreenshot(WEBSITE_URL);
       const totalTime = Date.now() - startTime;
       console.log(
         `✅ Screenshot captured successfully on attempt ${attempt} after ${totalTime} ms`
