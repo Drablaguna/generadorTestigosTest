@@ -171,7 +171,7 @@ async function storeFileInDrive(
     });
 
     const fileID = fileUpload.data.id;
-    console.log(`✅ File uploaded with ID: ${fileID}`);
+    console.log(`✅ File successfully uploaded!`);
     return { isUploaded: true, fileID: fileID, error: null };
   } catch (err) {
     console.error(`❌ Upload failed: ${err.message}`);
