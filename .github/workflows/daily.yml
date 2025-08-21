@@ -1,5 +1,4 @@
 name: Daily Screenshot
-# TODO check if caching needed at all and how to solve chromium being downloaded before cache read
 
 on:
   schedule:
