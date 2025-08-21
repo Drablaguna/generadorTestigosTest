@@ -45,8 +45,8 @@ async function createBrowserAndCaptureScreenshot(website) {
   } catch (err) {
     throw new Error(
       err instanceof puppeteer.errors.TimeoutError
-        ? `⚠️ Timeout exceeded while capturing screenshot`
-        : `❌ Screenshot capture failed: ${err.message}`
+        ? `⚠️ Timeout excedido para capturar la pantalla`
+        : `❌ Captura de pantalla fallida: ${err.message}`
     );
   } finally {
     await browser.close();
@@ -64,26 +64,26 @@ async function captureScreenshotWithRetries(
   while (attempt < maxRetries) {
     attempt++;
     try {
-      console.log(`Attempt ${attempt} to capture screenshot...`);
+      console.log(`Intento ${attempt} para capturar la pantalla...`);
       const stream = await createBrowserAndCaptureScreenshot(WEBSITE_URL);
       const totalTime = Date.now() - startTime;
       console.log(
-        `✅ Screenshot captured successfully on attempt ${attempt} after ${totalTime} ms`
+        `✅ Pantalla capturada satisfactoriamente en el intento ${attempt} despues de ${totalTime} ms`
       );
       return stream;
     } catch (err) {
-      console.error(`❌ Attempt ${attempt} failed: ${err.message}`);
+      console.error(`❌ Intento ${attempt} fallido: ${err.message}`);
 
       if (attempt >= maxRetries) {
         const totalTime = Date.now() - startTime;
         throw new Error(
-          `❌ Failed after ${maxRetries} attempts (${totalTime} ms total)`
+          `❌ Captura fallida despues de ${maxRetries} intentos (${totalTime} ms total)`
         );
       }
 
       let waitTime = baseDelayMs * Math.pow(2, attempt - 1);
       waitTime = Math.min(waitTime, maxWaitMs);
-      console.log(`⏳ Waiting ${waitTime}ms before retrying...`);
+      console.log(`⏳ Esperando ${waitTime}ms antes de reintentar...`);
       await delay(waitTime);
     }
   }
@@ -92,10 +92,10 @@ async function captureScreenshotWithRetries(
 // ---------------------------------- DRIVE ----------------------------------
 async function authorize() {
   if (!CLIENT_ID || !CLIENT_SECRET) {
-    throw new Error("❌ Missing credentials");
+    throw new Error("❌ Credenciales no encontradas");
   }
   if (!REFRESH_TOKEN) {
-    throw new Error("❌ Missing token");
+    throw new Error("❌ Token no encontrado");
   }
 
   const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET);
@@ -103,11 +103,11 @@ async function authorize() {
 
   try {
     await oAuth2Client.getAccessToken();
-    console.log("✅ Google Drive auth successful");
+    console.log("✅ Autorizacion con Google Drive satisfactoria");
   } catch (err) {
-    console.error("❌ Google Drive auth failed:", err.message);
+    console.error("❌ Autorizacion con Google Drive fallida:", err.message);
     throw new Error(
-      "❌ Auth validation failed — check your credentials and refresh token."
+      "❌ Validacion de autorizacion fallida, revisa las credenciales y token"
     );
   }
 
@@ -120,7 +120,7 @@ async function assertFileInDriveFolderExists(filename, filesInDriveArray) {
 
 async function getDriveFolderFiles(authClient, folderId) {
   if (!authClient) {
-    throw new Error("❌ No auth client passed");
+    throw new Error("❌ Ningun cliente de autorizacion fue inyectado");
   }
   const drive = google.drive({ version: "v3", auth: authClient });
   try {
@@ -130,14 +130,14 @@ async function getDriveFolderFiles(authClient, folderId) {
     });
 
     if (!res.data.files) {
-      console.warn("⚠️ No files found or API returned empty list.");
+      console.warn("⚠️ No se encontraron archivos o la API retorno una lista vacia");
       return [];
     }
 
     return res.data.files;
   } catch (err) {
-    console.error("❌ Error listing files:", err);
-    throw new Error(`❌ Error: ${err}`);
+    console.error("❌ Error listando archivos:", err);
+    throw new Error(`❌ Error listando archivos: ${err}`);
   }
 }
 
@@ -169,17 +169,17 @@ async function storeFileInDrive(
     });
 
     const fileID = fileUpload.data.id;
-    console.log(`✅ File successfully uploaded!`);
+    console.log(`✅ Captura subida satisfactoriamente!`);
     return { isUploaded: true, fileID: fileID, error: null };
   } catch (err) {
-    console.error(`❌ Upload failed: ${err.message}`);
+    console.error(`❌ Subida de captura fallida: ${err.message}`);
     return { isUploaded: false, fileID: null, error: err.message };
   }
 }
 
 // ---------------------------------- MAIN ----------------------------------
 (async () => {
-  console.log("Ejecutando capturador testigos...");
+  console.log("Ejecutando capturador de pantalla...");
   const currentYMDDate = await generateYMDDate();
   const auth = await authorize();
 
@@ -191,7 +191,7 @@ async function storeFileInDrive(
 
   if (!currentDayScreenshotExists) {
     console.log(
-      `No screenshot found for ${currentYMDDate}, generating...`
+      `No se encuentra captura de pantalla para ${currentYMDDate}, generando...`
     );
     const screenshot = await captureScreenshotWithRetries();
     const fileUploadStatus = await storeFileInDrive(
@@ -204,7 +204,8 @@ async function storeFileInDrive(
     currentDayScreenshotExists = fileUploadStatus.isUploaded;
   } else {
     console.log(
-      `✅ Screenshot for ${currentYMDDate} already in Google Drive.`
+      `✅ Captura de pantalla para ${currentYMDDate} ya existe en Google Drive`
     );
   }
+  console.log("Fin de ejecucion de capturador de pantalla")
 })();
